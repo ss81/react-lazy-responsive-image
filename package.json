@@ -1,6 +1,6 @@
 {
   "name": "react-lazy-responsive-image",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A React Component to lazy load responsive images",
   "main": "build/index.js",
   "scripts": {
