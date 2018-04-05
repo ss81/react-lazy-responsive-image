@@ -1,95 +1,124 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _templateObject = _taggedTemplateLiteral(['b: ', ' m: ', ''], ['b: ', ' m: ', '']),
-    _templateObject2 = _taggedTemplateLiteral(['b: ', ' e: ', ' m: ', ''], ['b: ', ' e: ', ' m: ', '']);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _helpers = require('./helpers');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var combine = function combine(strings) {
-    for (var _len = arguments.length, values = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        values[_key - 1] = arguments[_key];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PLACEHOLDER_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+var IGNORED_PROPS = ['sources', 'breakpoints'];
+var LOADED_CLASS = 'b-loaded';
+
+var LazyResponsiveImage = function (_Component) {
+  _inherits(LazyResponsiveImage, _Component);
+
+  function LazyResponsiveImage(props) {
+    _classCallCheck(this, LazyResponsiveImage);
+
+    var _this = _possibleConstructorReturn(this, (LazyResponsiveImage.__proto__ || Object.getPrototypeOf(LazyResponsiveImage)).call(this, props));
+
+    _this.loadImage = _this.loadImage.bind(_this);
+    _this.state = { loaded: false };
+    return _this;
+  }
+
+  _createClass(LazyResponsiveImage, [{
+    key: 'getMediaSources',
+    value: function getMediaSources() {
+      var _this2 = this;
+
+      return Object.keys(this.props.sources).reduce(function (result, k) {
+        result[(0, _helpers.sourceProp)(k)] = _this2.props.sources[k];
+        return result;
+      }, {});
     }
+  }, {
+    key: 'loadImage',
+    value: function loadImage() {
+      var _this3 = this;
 
-    var content = '';
-    var len = Math.max(strings.length, values.length);
-    for (var i = 0; i < len; i++) {
-        content += strings[i] || '';
-        content += values[i] || '';
+      var config = {
+        breakpoints: Object.keys(this.props.breakpoints).filter(function (k) {
+          return _this3.props.sources[k];
+        }).map(function (k) {
+          return {
+            width: _this3.props.breakpoints[k],
+            src: (0, _helpers.sourceProp)(k)
+          };
+        })
+      };
+
+      var blazy = _helpers.BlazyWrapper.getInstance(config);
+
+      setTimeout(function () {
+        blazy.load(_this3.refs.image);
+        _this3.setState({ loaded: true });
+      });
     }
-    return content;
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.loadImage();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var sources = this.getMediaSources();
+      var injectingProps = (0, _helpers.omit)(this.props, IGNORED_PROPS);
+      var loadedClass = this.state.loaded ? LOADED_CLASS : '';
+      return _react2.default.createElement('img', _extends({}, injectingProps, sources, {
+        className: 'b-lazy ' + this.props.className + ' ' + loadedClass,
+        ref: 'image',
+        src: PLACEHOLDER_IMAGE,
+        'data-src': this.props.src
+      }));
+    }
+  }]);
+
+  return LazyResponsiveImage;
+}(_react.Component);
+
+var DEFAULT_BREAKPOINTS = {
+  small: 600,
+  medium: 900,
+  large: 1200,
+  huge: 1800
 };
 
-var parseTemplate = function parseTemplate(text) {
-    var parts = text.match(/\s*\S+?\s*:\s*\S+\s*/g);
-    return parts.reduce(function (acc, part) {
-        var result = part.match(/\s*(\S+)?\s*:\s*(\S+)\s*/);
-        acc[result[1]] = result[2];
-        return acc;
-    }, {});
+LazyResponsiveImage.defaultProps = {
+  src: '',
+  className: '',
+  sources: {},
+  breakpoints: DEFAULT_BREAKPOINTS
 };
 
-var bemClass = function bemClass(_ref) {
-    var b = _ref.b,
-        e = _ref.e,
-        m = _ref.m;
+LazyResponsiveImage.propTypes = _defineProperty({
+  src: _propTypes2.default.string.isRequired,
+  sources: _propTypes2.default.instanceOf(Object),
+  breakpoints: _propTypes2.default.instanceOf(Object)
+}, 'src', _propTypes2.default.string);
 
-    var main = e ? b + '__' + e : b;
-    var result = main;
-    m.forEach(function (i) {
-        result += i ? ' ' + main + '--' + i : '';
-    });
-    return result;
-};
-
-var bem = function bem() {
-    var WrappedComponent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
-
-    return function () {
-        var config = parseTemplate(combine.apply(undefined, arguments));
-        return function (props) {
-            var modifiers = (props.modifiers || '').split(',');
-            var className = bemClass(Object.assign({}, config, {
-                m: (config.m || '').split(',').concat(modifiers)
-            }));
-            var elementClass = props.className ? ' ' + props.className : '';
-            var injectProps = Object.assign({}, props);
-            delete injectProps.modifiers;
-            return _react2.default.createElement(WrappedComponent, _extends({}, injectProps, {
-                className: '' + className + elementClass
-            }));
-        };
-    };
-};
-
-var BemElementsCreator = function BemElementsCreator(blockName) {
-    return {
-        block: function block(WrappedComponent) {
-            for (var _len2 = arguments.length, modifiers = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                modifiers[_key2 - 1] = arguments[_key2];
-            }
-
-            return bem(WrappedComponent)(_templateObject, blockName, modifiers.join(','));
-        },
-        element: function element(WrappedComponent, _element) {
-            for (var _len3 = arguments.length, modifiers = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-                modifiers[_key3 - 2] = arguments[_key3];
-            }
-
-            return bem(WrappedComponent)(_templateObject2, blockName, _element, modifiers.join(','));
-        }
-    };
-};
-
-exports.default = BemElementsCreator;
+exports.default = LazyResponsiveImage;
