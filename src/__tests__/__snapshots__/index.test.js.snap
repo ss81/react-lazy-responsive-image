@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rendes successfully the lazy image 1`] = `
+<img
+  className="b-lazy test-class "
+  data-src="foo@default.jpg"
+  data-src-large="foo@large.jpg|foo@large-2x.jpg"
+  data-src-medium="foo@medium.jpg"
+  data-src-small="foo@small.jpg"
+  src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+/>
+`;
